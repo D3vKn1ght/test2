@@ -1,311 +1,390 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script src="main.js" type="text/javascript"></script><title>Happy 20/10 to the wonderful Hà Trang 💕</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>20/10 – Gửi tặng Hà Trang 💖 (Pro Edition)</title>
+<meta name="description" content="Trang chúc mừng 20/10 siêu nhiều hiệu ứng: pháo hoa, confetti, bokeh, tim bay, cánh sen, neon, parallax, tilt 3D.">
+<style>
+  :root{
+    --bg1:#1a1446; --bg2:#7a52ff; --bg3:#ff9bd2;
+    --neon1:#ff9fe8; --neon2:#b39cff; --neon3:#ffd1e9;
+    --glass: rgba(255,255,255,.10);
+    --border: rgba(255,255,255,.25);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:#fff; overflow:hidden;
+    font-family: ui-sans-serif, system-ui, "Poppins", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, var(--bg3), transparent 60%),
+      radial-gradient(1200px 600px at 10% 110%, #6a5cff, transparent 60%),
+      linear-gradient(135deg, var(--bg2), var(--bg1));
+    animation:bgShift 20s linear infinite;
+  }
+  @keyframes bgShift{
+    0%{filter:hue-rotate(0)}
+    50%{filter:hue-rotate(18deg)}
+    100%{filter:hue-rotate(0)}
+  }
+  /* Lớp hiệu ứng nền */
+  #canvas-bokeh, #canvas-fire, #canvas-confetti, #canvas-sparkle{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+  }
+  /* Cánh sen & tim bay (DOM) */
+  #floaters{position:fixed; inset:0; pointer-events:none; z-index:1}
+
+  /* Khối trung tâm */
+  .wrap{
+    position:relative; z-index:3; height:100%;
+    display:grid; grid-template-rows:auto 1fr auto; gap:10px;
+    width:min(1100px, 94vw); margin:0 auto; padding:16px;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:8px 14px; border-radius:999px;
+    background:var(--glass); border:1px solid var(--border); backdrop-filter: blur(6px);
+    font-weight:600;
+  }
+  .neon{
+    font-size:clamp(28px,5.5vw,64px);
+    background:linear-gradient(90deg, var(--neon1), var(--neon2), var(--neon3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 0 12px rgba(255,160,230,.7)) drop-shadow(0 0 28px rgba(160,140,255,.35));
+    text-align:center; margin:0;
+  }
+  .typing{
+    display:inline-block; border-right:2px solid rgba(255,255,255,.8); white-space:nowrap; overflow:hidden;
+    animation:caret 1s steps(1) infinite;
+  }
+  @keyframes caret{50%{border-color:transparent}}
+
+  .card{
+    width:min(780px, 92vw); margin:0 auto;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:22px;
+    padding: clamp(18px, 3vw, 28px);
+    box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    transform-style:preserve-3d; will-change:transform;
+  }
+  .sub{
+    margin:8px auto 16px; text-align:center; max-width:52ch; opacity:.92;
+    font-size:clamp(14px,2.2vw,18px);
+  }
+  .controls{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;
+  }
+  button, .switch{
+    border:0; outline:0; cursor:pointer; user-select:none; font-weight:700;
+    padding:10px 16px; border-radius:14px; color:#2d0a2d;
+    background: linear-gradient(135deg,#ff7bc7,#ffa3d7 60%,#ffd1e9);
+    box-shadow: 0 10px 30px rgba(255, 123, 199, .35); transition: transform .08s ease;
+  }
+  button:active{transform:translateY(1px) scale(.98)}
+  .ghost{background: transparent; color:#fff; border:1px solid rgba(255,255,255,.35); box-shadow:none}
+
+  /* Panel cài đặt */
+  .panel{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px;
+  }
+  .panel .switch{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.25)}
+  .panel input[type=range]{width:min(280px, 60vw)}
+  footer{ text-align:center; opacity:.7; font-size:13px; padding-bottom:10px; }
+
+  /* Tim & sen bay */
+  .heart, .petal{
+    position:absolute; top:-8vh; pointer-events:none; will-change:transform;
+    filter: drop-shadow(0 6px 10px rgba(255, 75, 156, .25));
+    animation: fall var(--d,12s) linear infinite, sway 6s ease-in-out infinite;
+  }
+  .heart{ width:18px; height:18px; background:
+      radial-gradient(circle at 30% 30%, #fff6fb 0%, #ff7bc7 60%, #ff4e9c 100%);
+    transform: rotate(45deg); border-radius: 2px 50% 50% 2px / 2px 50% 50% 2px; }
+  .heart::before, .heart::after{
+    content:""; position:absolute; width:100%; height:100%; background:inherit; border-radius:50%;
+  }
+  .heart::before{ left:-50% } .heart::after{ top:-50% }
+
+  .petal{
+    width:22px; height:14px; border-radius:60% 60% 60% 0 / 70% 70% 30% 30%;
+    background: radial-gradient(circle at 30% 40%, #ffd6ea 0%, #ff7bc7 60%, #ff4e9c 100%);
+  }
+  @keyframes fall{ to{ transform: translateY(110vh) rotate(360deg)} }
+  @keyframes sway{ 0%,100%{margin-left:-12px} 50%{margin-left:12px} }
+
+  /* Toast */
+  .toast{
+    position: fixed; inset:auto 0 26px 0; margin:auto; width:fit-content;
+    background:rgba(255,255,255,.94); color:#4a1250; border-radius:12px;
+    padding:10px 14px; font-weight:700; box-shadow:0 12px 30px rgba(0,0,0,.25);
+    transform: translateY(20px); opacity:0; transition:.35s ease; z-index:5;
+  }
+  .toast.show{ transform: translateY(0); opacity:1 }
+  .toast small{ display:block; opacity:.7; font-weight:600; margin-top:2px }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce){
+    *, *::before,*::after{ animation:none !important; transition:none !important }
+    #canvas-bokeh,#canvas-fire,#canvas-confetti,#canvas-sparkle{ display:none !important }
+    .heart,.petal{ display:none !important }
+  }
+</style>
 </head>
-    
-<body class="not-loaded">
-    <div class="night"></div>
-    <div class="happy-woman-day">𝓗𝓪𝓹𝓹𝔂 𝓦𝓸𝓶𝓮𝓷'𝓼 𝓓𝓪𝔂 2️⃣0️⃣/1️⃣0️⃣, 𝓗𝓪̀ 𝓣𝓻𝓪𝓷𝓰 🌸</div>
-    <div class="flowers">
-      <div class="flower flower--1">
-        <div class="flower__leafs flower__leafs--1">
-          <div class="flower__leaf flower__leaf--1"></div>
-          <div class="flower__leaf flower__leaf--2"></div>
-          <div class="flower__leaf flower__leaf--3"></div>
-          <div class="flower__leaf flower__leaf--4"></div>
-          <div class="flower__white-circle"></div>
-  
-          <div class="flower__light flower__light--1"></div>
-          <div class="flower__light flower__light--2"></div>
-          <div class="flower__light flower__light--3"></div>
-          <div class="flower__light flower__light--4"></div>
-          <div class="flower__light flower__light--5"></div>
-          <div class="flower__light flower__light--6"></div>
-          <div class="flower__light flower__light--7"></div>
-          <div class="flower__light flower__light--8"></div>
-  
+<body>
+  <!-- Lớp hiệu ứng -->
+  <canvas id="canvas-bokeh" aria-hidden="true"></canvas>
+  <canvas id="canvas-fire" aria-hidden="true"></canvas>
+  <canvas id="canvas-confetti" aria-hidden="true"></canvas>
+  <canvas id="canvas-sparkle" aria-hidden="true"></canvas>
+  <div id="floaters" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="badge">🌸 Ngày Phụ Nữ Việt Nam • 20/10</div>
+      <div class="badge" id="time"></div>
+    </header>
+
+    <main style="display:grid; place-items:center;">
+      <section class="card" id="tilt">
+        <h1 class="neon"><span id="title" class="typing"></span></h1>
+        <p class="sub">
+          Gửi tới người con gái đặc biệt nhất – <b>Hà Trang</b> 💖<br/>
+          Chúc em luôn xinh đẹp, rạng rỡ và hạnh phúc như những đoá hoa trong nắng sớm. Cảm ơn em đã khiến thế giới của anh dịu dàng hơn mỗi ngày.
+        </p>
+        <div class="controls">
+          <button id="btnBless">Gửi lời chúc 💌</button>
+          <button id="btnFire" class="ghost">Thả pháo hoa 🎆</button>
         </div>
-        <div class="flower__line">
-          <div class="flower__line__leaf flower__line__leaf--1"></div>
-          <div class="flower__line__leaf flower__line__leaf--2"></div>
-          <div class="flower__line__leaf flower__line__leaf--3"></div>
-          <div class="flower__line__leaf flower__line__leaf--4"></div>
-          <div class="flower__line__leaf flower__line__leaf--5"></div>
-          <div class="flower__line__leaf flower__line__leaf--6"></div>
+        <div class="panel" aria-label="Cài đặt hiệu ứng">
+          <span class="switch" id="toggleBokeh">Bokeh ✨</span>
+          <span class="switch" id="toggleHearts">Tim bay 💗</span>
+          <span class="switch" id="togglePetals">Cánh sen 🌺</span>
+          <span class="switch" id="toggleSparkle">Vệt lấp lánh 🐾</span>
+          <label style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); padding:8px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.2)">
+            Cường độ
+            <input id="intensity" type="range" min="0.3" max="2.0" step="0.1" value="1">
+          </label>
         </div>
-      </div>
-  
-      <div class="flower flower--2">
-        <div class="flower__leafs flower__leafs--2">
-          <div class="flower__leaf flower__leaf--1"></div>
-          <div class="flower__leaf flower__leaf--2"></div>
-          <div class="flower__leaf flower__leaf--3"></div>
-          <div class="flower__leaf flower__leaf--4"></div>
-          <div class="flower__white-circle"></div>
-  
-          <div class="flower__light flower__light--1"></div>
-          <div class="flower__light flower__light--2"></div>
-          <div class="flower__light flower__light--3"></div>
-          <div class="flower__light flower__light--4"></div>
-          <div class="flower__light flower__light--5"></div>
-          <div class="flower__light flower__light--6"></div>
-          <div class="flower__light flower__light--7"></div>
-          <div class="flower__light flower__light--8"></div>
-  
-        </div>
-        <div class="flower__line">
-          <div class="flower__line__leaf flower__line__leaf--1"></div>
-          <div class="flower__line__leaf flower__line__leaf--2"></div>
-          <div class="flower__line__leaf flower__line__leaf--3"></div>
-          <div class="flower__line__leaf flower__line__leaf--4"></div>
-        </div>
-      </div>
-  
-      <div class="flower flower--3">
-        <div class="flower__leafs flower__leafs--3">
-          <div class="flower__leaf flower__leaf--1"></div>
-          <div class="flower__leaf flower__leaf--2"></div>
-          <div class="flower__leaf flower__leaf--3"></div>
-          <div class="flower__leaf flower__leaf--4"></div>
-          <div class="flower__white-circle"></div>
-  
-          <div class="flower__light flower__light--1"></div>
-          <div class="flower__light flower__light--2"></div>
-          <div class="flower__light flower__light--3"></div>
-          <div class="flower__light flower__light--4"></div>
-          <div class="flower__light flower__light--5"></div>
-          <div class="flower__light flower__light--6"></div>
-          <div class="flower__light flower__light--7"></div>
-          <div class="flower__light flower__light--8"></div>
-  
-        </div>
-        <div class="flower__line">
-          <div class="flower__line__leaf flower__line__leaf--1"></div>
-          <div class="flower__line__leaf flower__line__leaf--2"></div>
-          <div class="flower__line__leaf flower__line__leaf--3"></div>
-          <div class="flower__line__leaf flower__line__leaf--4"></div>
-        </div>
-      </div>
-  
-      <div class="grow-ans" style="--d:1.2s">
-        <div class="flower__g-long">
-          <div class="flower__g-long__top"></div>
-          <div class="flower__g-long__bottom"></div>
-        </div>
-      </div>
-  
-      <div class="growing-grass">
-        <div class="flower__grass flower__grass--1">
-          <div class="flower__grass--top"></div>
-          <div class="flower__grass--bottom"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--1"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--2"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--3"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--4"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--5"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--6"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--7"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--8"></div>
-          <div class="flower__grass__overlay"></div>
-        </div>
-      </div>
-  
-      <div class="growing-grass">
-        <div class="flower__grass flower__grass--2">
-          <div class="flower__grass--top"></div>
-          <div class="flower__grass--bottom"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--1"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--2"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--3"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--4"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--5"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--6"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--7"></div>
-          <div class="flower__grass__leaf flower__grass__leaf--8"></div>
-          <div class="flower__grass__overlay"></div>
-        </div>
-      </div>
-  
-      <div class="grow-ans" style="--d:2.4s">
-        <div class="flower__g-right flower__g-right--1">
-          <div class="leaf"></div>
-        </div>
-      </div>
-  
-      <div class="grow-ans" style="--d:2.8s">
-        <div class="flower__g-right flower__g-right--2">
-          <div class="leaf"></div>
-        </div>
-      </div>
-  
-      <div class="grow-ans" style="--d:2.8s">
-        <div class="flower__g-front">
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--1">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--2">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--3">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--4">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--5">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--6">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--7">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--8">
-            <div class="flower__g-front__leaf"></div>
-          </div>
-          <div class="flower__g-front__line"></div>
-        </div>
-      </div>
-  
-      <div class="grow-ans" style="--d:3.2s">
-        <div class="flower__g-fr">
-          <div class="leaf"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--1"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--2"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--3"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--4"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--5"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--6"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--7"></div>
-          <div class="flower__g-fr__leaf flower__g-fr__leaf--8"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--0">
-        <div class="grow-ans" style="--d:3s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:2.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.4s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--1">
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.8s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:4s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--2">
-        <div class="grow-ans" style="--d:4s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.4s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--3">
-        <div class="grow-ans" style="--d:4s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:3s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--4">
-        <div class="grow-ans" style="--d:4s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:3s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--5">
-        <div class="grow-ans" style="--d:4s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:3s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--6">
-        <div class="grow-ans" style="--d:4.2s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.4s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.6s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:4.8s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-  
-      <div class="long-g long-g--7">
-        <div class="grow-ans" style="--d:3s">
-          <div class="leaf leaf--0"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.2s">
-          <div class="leaf leaf--1"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.5s">
-          <div class="leaf leaf--2"></div>
-        </div>
-        <div class="grow-ans" style="--d:3.6s">
-          <div class="leaf leaf--3"></div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </main>
+
+    <footer>— Tặng Hà Trang một 20/10 rực rỡ —</footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ========= Utilities ========= */
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = sel => document.querySelector(sel);
+function rand(a,b){ return Math.random()*(b-a)+a }
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)) }
+
+/* ========= Time ========= */
+(function(){
+  const t = new Date();
+  $('#time').textContent = new Intl.DateTimeFormat('vi-VN',{dateStyle:'full', timeStyle:'short'}).format(t);
+})();
+
+/* ========= Typing Title ========= */
+const fullTitle = "Chúc mừng Ngày 20/10 – Hà Trang yêu dấu";
+(function type(){
+  const el = $('#title'); let i = 0;
+  const step = () => {
+    if(i<=fullTitle.length){ el.textContent = fullTitle.slice(0,i++); setTimeout(step, 50) }
+    else el.classList.remove('typing');
+  };
+  step();
+})();
+
+/* ========= Tilt 3D ========= */
+(function(){
+  const card = $('#tilt'); let rect;
+  function upd(e){
+    rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left)/rect.width, y = (e.clientY - rect.top)/rect.height;
+    const rx = (0.5 - y)*10, ry = (x - 0.5)*10;
+    card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+  }
+  function reset(){ card.style.transform = 'perspective(900px) rotateX(0) rotateY(0)' }
+  window.addEventListener('mousemove', upd);
+  window.addEventListener('mouseleave', reset);
+})();
+
+/* ========= Bokeh/Stars Canvas ========= */
+const bokeh = (function(){
+  const c = $('#canvas-bokeh'), ctx = c.getContext('2d', {alpha:true});
+  let W=0,H=0, dots=[];
+  function resize(){ const dpr=Math.max(1,devicePixelRatio||1); W=c.width=innerWidth*dpr; H=c.height=innerHeight*dpr; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; ctx.setTransform(dpr,0,0,dpr,0,0) }
+  function make(n=60){ dots = Array.from({length:n},()=>({
+    x:rand(0,innerWidth), y:rand(0,innerHeight), r:rand(2,6), s:rand(.2,.9), a:rand(.2,.8)
+  })) }
+  function draw(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const d of dots){
+      d.y += 0.1*d.s; d.x += Math.sin(d.y*0.01)*0.2*d.s;
+      if(d.y>innerHeight+10){ d.y=-10; d.x=rand(0,innerWidth) }
+      ctx.beginPath(); ctx.globalAlpha = d.a; ctx.fillStyle = `hsl(${330 + Math.sin(d.x*.01)*15},90%,${60+Math.sin(d.y*.03)*15}%)`;
+      ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  function init(n=60){ resize(); make(n); draw() }
+  addEventListener('resize', resize);
+  return { init, toggle(on){ c.style.display = on?'block':'none' } }
+})();
+
+/* ========= Fireworks Canvas ========= */
+const fireworks = (function(){
+  const c = $('#canvas-fire'), ctx = c.getContext('2d');
+  let W,H, P=[], enabled=true, intensity=1;
+  function resize(){ const dpr=Math.max(1,devicePixelRatio||1); W=c.width=innerWidth*dpr; H=c.height=innerHeight*dpr; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; ctx.setTransform(dpr,0,0,dpr,0,0) }
+  function add(x,y,col){ const n = Math.floor(90*intensity);
+    for(let i=0;i<n;i++){ const a=(i/n)*Math.PI*2, s=rand(1.5,4.5)*intensity;
+      P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rand(45,70),age:0,color:col||`hsl(${Math.floor(rand(300,360))},95%,70%)`})
+    }
+  }
+  function loop(){
+    ctx.fillStyle='rgba(20,10,40,.22)'; ctx.fillRect(0,0,innerWidth,innerHeight);
+    for(let i=P.length-1;i>=0;i--){ const p=P[i]; p.age++; p.x+=p.vx; p.y+=p.vy; p.vy+=0.03; p.vx*=0.995; p.vy*=0.995;
+      const a=Math.max(0,1-p.age/p.life); ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(p.x,p.y,2+1.2*a,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
+      if(p.age>p.life) P.splice(i,1);
+    } ctx.globalAlpha=1; requestAnimationFrame(loop);
+  }
+  function burstCenter(){ add(innerWidth*.5, innerHeight*.35); add(innerWidth*.68, innerHeight*.5,'hsl(330,95%,70%)'); add(innerWidth*.32, innerHeight*.56,'hsl(305,95%,75%)') }
+  function init(){ resize(); loop(); setTimeout(burstCenter, 800) }
+  addEventListener('resize', resize);
+  addEventListener('click', e=>{ if(!enabled) return; const r=c.getBoundingClientRect(); add(e.clientX - r.left, e.clientY - r.top) }, {passive:true});
+  return { init, burstCenter, setIntensity(v){ intensity=v }, toggle(on){ enabled=on; c.style.display=on?'block':'none' } }
+})();
+
+/* ========= Confetti Canvas ========= */
+const confetti = (function(){
+  const c = $('#canvas-confetti'), ctx = c.getContext('2d');
+  let pieces=[], enabled=true, intensity=1;
+  function resize(){ const dpr=Math.max(1,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; ctx.setTransform(dpr,0,0,dpr,0,0) }
+  function burst(x=innerWidth/2, y=innerHeight*.35){
+    if(!enabled) return;
+    const n=Math.floor(140*intensity);
+    for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, s=rand(2,6)*intensity;
+      pieces.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s, w:rand(4,8), h:rand(6,12), rot:rand(0,Math.PI), vr:rand(-.2,.2),
+        col:`hsl(${rand(300,360)}, 95%, ${50+Math.random()*30}%)`, life:rand(60,120), age:0})
+    }
+  }
+  function loop(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(let i=pieces.length-1;i>=0;i--){ const p=pieces[i]; p.age++; p.x+=p.vx; p.y+=p.vy; p.vy+=0.06; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col; ctx.globalAlpha=Math.max(0,1-p.age/p.life);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+      if(p.age>p.life) pieces.splice(i,1);
+    }
+    requestAnimationFrame(loop);
+  }
+  function init(){ resize(); loop() }
+  addEventListener('resize', resize);
+  return { init, burst, toggle(on){ enabled=on; c.style.display=on?'block':'none' }, setIntensity(v){ intensity=v } }
+})();
+
+/* ========= Sparkle Cursor ========= */
+const sparkle = (function(){
+  const c = $('#canvas-sparkle'), ctx = c.getContext('2d');
+  let sparks=[], enabled=true, intensity=1;
+  function resize(){ const dpr=Math.max(1,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; ctx.setTransform(dpr,0,0,dpr,0,0) }
+  function add(x,y){
+    if(!enabled) return;
+    const n = Math.floor(10*intensity);
+    for(let i=0;i<n;i++) sparks.push({x,y,vx:rand(-1,1),vy:rand(-1,1),life:rand(18,28),age:0})
+  }
+  function loop(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(let i=sparks.length-1;i>=0;i--){ const s=sparks[i]; s.age++; s.x+=s.vx; s.y+=s.vy; s.vy+=0.02; const a=Math.max(0,1-s.age/s.life);
+      ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(s.x,s.y,1.6+0.8*a,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      if(s.age>s.life) sparks.splice(i,1);
+    }
+    ctx.globalAlpha=1; requestAnimationFrame(loop);
+  }
+  function init(){ resize(); loop(); addEventListener('mousemove', e=>add(e.clientX,e.clientY), {passive:true}); addEventListener('touchmove', e=>{ const t=e.touches[0]; add(t.clientX,t.clientY)}, {passive:true}); }
+  addEventListener('resize', resize);
+  return { init, toggle(on){ enabled=on; c.style.display=on?'block':'none' }, setIntensity(v){ intensity=v } }
+})();
+
+/* ========= Floaters: Hearts & Petals ========= */
+const floaters = (function(){
+  const box = $('#floaters'); let heartsOn=true, petalsOn=true, intensity=1;
+  function addHeart(){ if(!heartsOn) return; const e=document.createElement('div'); e.className='heart';
+    const x=rand(0,100), s=rand(.7,1.5)*intensity, d=rand(9,14)/Math.sqrt(intensity);
+    e.style.left=x+'vw'; e.style.setProperty('--d', d+'s'); e.style.transform=`scale(${s}) rotate(45deg)`; box.appendChild(e);
+    setTimeout(()=>e.remove(), d*1000);
+  }
+  function addPetal(){ if(!petalsOn) return; const e=document.createElement('div'); e.className='petal';
+    const x=rand(0,100), s=rand(.7,1.4)*intensity, d=rand(10,16)/Math.sqrt(intensity);
+    e.style.left=x+'vw'; e.style.setProperty('--d', d+'s'); e.style.transform=`rotate(15deg) scale(${s})`; box.appendChild(e);
+    setTimeout(()=>e.remove(), d*1000);
+  }
+  let heartTimer, petalTimer;
+  function start(){
+    heartTimer=setInterval(addHeart, 700/Math.sqrt(intensity));
+    petalTimer=setInterval(addPetal, 900/Math.sqrt(intensity));
+  }
+  function stop(){ clearInterval(heartTimer); clearInterval(petalTimer) }
+  function setIntensity(v){ intensity=v; stop(); start() }
+  function toggleHearts(on){ heartsOn=on }
+  function togglePetals(on){ petalsOn=on }
+  start();
+  return { setIntensity, toggleHearts, togglePetals }
+})();
+
+/* ========= Toast + Wishes ========= */
+const toast = $('#toast');
+function showToast(msg, sub='Nhấn để thả pháo hoa 🎆'){
+  toast.innerHTML = msg + (sub?`<small>${sub}</small>`:'');
+  toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 3200);
+}
+const wishes = [
+  "Chúc Hà Trang luôn khoẻ mạnh, hạnh phúc và được yêu thương thật nhiều! 💐",
+  "Mong Hà Trang mỗi ngày đều rực rỡ như đoá sen hồng. 🌸",
+  "Hà Trang là bình yên và cảm hứng của anh—20/10 thật ngọt ngào nhé! ✨",
+  "Chúc Hà Trang dịu dàng, vững vàng và luôn mỉm cười trước mọi hành trình. 💖",
+  "Một ngày 20/10 xinh tươi và ấm áp cho Hà Trang! 🌷",
+  "Cảm ơn Hà Trang vì tất cả yêu thương và sự tận tâm! 🌟"
+];
+
+/* ========= Wiring Controls ========= */
+$('#btnBless').addEventListener('click', ()=>{
+  const msg = wishes[Math.floor(Math.random()*wishes.length)];
+  showToast(msg, "Kèm một màn confetti cho nàng ✨");
+  confetti.burst();
+});
+$('#btnFire').addEventListener('click', ()=>fireworks.burstCenter());
+
+$('#toggleBokeh').addEventListener('click', function(){ const on = $('#canvas-bokeh').style.display !== 'none'; bokeh.toggle(!on); this.classList.toggle('active', !on) });
+$('#toggleHearts').addEventListener('click', function(){ const now = this.classList.toggle('active'); floaters.toggleHearts(now) });
+$('#togglePetals').addEventListener('click', function(){ const now = this.classList.toggle('active'); floaters.togglePetals(now) });
+$('#toggleSparkle').addEventListener('click', function(){ const on = $('#canvas-sparkle').style.display !== 'none'; sparkle.toggle(!on); this.classList.toggle('active', !on) });
+
+$('#intensity').addEventListener('input', e=>{
+  const v = parseFloat(e.target.value);
+  fireworks.setIntensity(v);
+  confetti.setIntensity(v);
+  sparkle.setIntensity(v);
+  floaters.setIntensity(v);
+});
+
+/* ========= Init ========= */
+if(!prefersReduced){
+  bokeh.init(70);
+  fireworks.init();
+  confetti.init();
+  sparkle.init();
+}
+
+/* ========= Accessibility note ========= */
+if(prefersReduced){
+  showToast("Đã giảm chuyển động theo cài đặt của bạn.","Bạn vẫn có thể bật lại bằng cài đặt hệ thống.");
+}
+</script>
 </body>
 </html>
